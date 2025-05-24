@@ -1,0 +1,17 @@
+# ignore all pycharm files
+.idea/
+
+# ignore all html files
+htmls/
+
+# ignore all data files
+data/
+
+# ignore .env
+.env
+.venv/
+.idea/
+data/
+htmls/
+__pycache__/
+faculties_vectorstore/
