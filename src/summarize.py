@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from IPython.display import Markdown, display
 from openai import OpenAI
-import profile_scraper as profile_scraper
+import src.scraper.profile_scraper as profile_scraper
 # Load environment variables in a file called .env
 
 load_dotenv(override=True)
@@ -28,18 +28,15 @@ else:
 
 # Define our system prompt - you can experiment with this later, changing the last sentence to 'Respond in markdown in Spanish."
 
-system_prompt = "You are[ an assistant that analyzes the contents of a website \
-and provides a short summary, ignoring text that might be navigation related. \
-Respond in markdown."
+system_prompt = '''You are an assistant helping to remove unrelated html elements and put everything in a single text file'''
 
 # A function that writes a User Prompt that asks for summaries of websites:
 
 def user_prompt_for(website):
-    user_prompt = f"You are looking at a website titled {website.title}"
+    user_prompt = f"You are looking at a faculty member's website"
     user_prompt += "\nThe contents of this website is as follows; \
-please provide a short summary of this website in markdown. \
-If it includes news or announcements, then summarize these too. And tell me whether the device has to be bought in US.\n\n"
-    user_prompt += website.text
+please provide a processed text file\n"
+    user_prompt += website
     return user_prompt
 
 # See how this function creates exactly the format above
@@ -50,12 +47,20 @@ def messages_for(website):
         {"role": "user", "content": user_prompt_for(website)}
     ]
 
+def remove_prefix_and_suffix(text):
+    # only keep text between ``` and ```
+    text = text.split("```")[1]
+    return text
+
 # And now: call the OpenAI API. You will get very familiar with this!
 
-def summarize(url):
-    website = profile_scraper.FacultyProfileScraper(url)
+def summarize(website):
     response = openai.chat.completions.create(
         model = "gpt-4o-mini",
         messages = messages_for(website)
     )
+
+
     return response.choices[0].message.content
+
+

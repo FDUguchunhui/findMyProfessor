@@ -1,8 +1,10 @@
+import os
+import time
 import requests
 from bs4 import BeautifulSoup
 from typing import List, Dict, Optional
 from urllib.parse import urljoin
-import profile_scraper
+import src.scraper.profile_scraper as profile_scraper
 from summarize import summarize
 import json
 
@@ -28,6 +30,10 @@ class FacultyScraper:
         if not self.faculty_list:
             print("No faculty data to save. Please scrape data first.")
             return
+        
+                # remove the file if it exists
+        if os.path.exists(output_file):
+            os.remove(output_file)
             
         with open(output_file, 'w', encoding='utf-8') as f:
             for faculty_member in self.faculty_list:
@@ -80,7 +86,6 @@ class FacultyScraper:
             print(f"Processed {i+1}/{len(faculty_divs)} faculty members")
         
         self.faculty_list = faculty_list
-        return faculty_list
             
     def _get_faculty_profile(self, profile_url: str) -> str:
         """
@@ -104,11 +109,6 @@ class FacultyScraper:
         '''
         pass
 
-    def scrape_faculty_list(self) -> List[Dict]:
-        '''
-        Scrape the faculty list from the faculty divs
-        '''
-        pass
 
     def _extract_image_url(self, faculty_div) -> Optional[str]:
         '''

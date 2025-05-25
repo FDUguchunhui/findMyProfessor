@@ -6,7 +6,7 @@ from typing_extensions import override
 import time
 from urllib.parse import urljoin
 from summarize import summarize
-from faculty_scraper import FacultyScraper
+from src.scraper.faculty_scraper import FacultyScraper
 
 class GSBSFacultyScraper(FacultyScraper):
     """A class to scrape faculty information from GSBS websites."""
@@ -208,7 +208,6 @@ class GSBSFacultyScraper(FacultyScraper):
         
         print(f"Completed scraping {page_num} page(s), total faculty: {len(faculty_list)}")
         self.faculty_list = faculty_list
-        return faculty_list
 
 
 def main():

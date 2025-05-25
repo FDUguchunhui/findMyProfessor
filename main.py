@@ -15,17 +15,19 @@ df = pd.DataFrame(data)
 
 df
 #%%
-# Calculate the sums
-sum_apples = df['Apples'].sum()
-sum_bananas = df['Bananas'].sum()
+# # Calculate the sums
+# sum_apples = df['Apples'].sum()
+# sum_bananas = df['Bananas'].sum()
 
-# Create a bar chart
-plt.bar(['Apples', 'Bananas'], [sum_apples, sum_bananas], color=['red', 'blue'])
+# # Create a bar chart
+# plt.bar(['Apples', 'Bananas'], [sum_apples, sum_bananas], color=['red', 'blue'])
 
-# Set a title
-plt.title('Comparison of total Apples and Bananas')
+# # Set a title
+# plt.title('Comparison of total Apples and Bananas')
 
-# Show the plot
-plt.show()
+# # Show the plot
+# plt.show()
 
 # See DataSpell help at https://www.jetbrains.com/help/dataspell/
+
+# %%

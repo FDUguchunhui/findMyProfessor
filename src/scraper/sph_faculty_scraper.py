@@ -6,7 +6,7 @@ from typing_extensions import override
 import time
 from urllib.parse import urljoin
 from summarize import summarize
-from faculty_scraper import FacultyScraper
+from src.scraper.faculty_scraper import FacultyScraper
 
 class SPHFacultyScraper(FacultyScraper):
     """A class to scrape faculty information from SPH websites."""
@@ -98,12 +98,9 @@ def main():
     base_url = 'https://sph.uth.edu/faculty/'
     
     # Create scraper instance and run
-    scraper = SPHFacultyScraper(base_url, debug=True)
-    faculty_list = scraper.scrape_faculty_list()
-    # dump the faculty list as jsonl file
-    with open('data/faculty_list.jsonl', 'w') as f:
-        for faculty in faculty_list:
-            f.write(json.dumps(faculty) + '\n')
+    scraper = SPHFacultyScraper(base_url, debug=False)
+    scraper.scrape_faculty_list()
+    scraper.save_to_jsonl('data/sph_faculty_list.jsonl')
 
 
 if __name__ == "__main__":
