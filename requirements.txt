@@ -12,7 +12,7 @@ torch
 transformers
 tqdm
 openai
-gradio
+gradio>=4.0.0
 langchain
 tiktoken
 faiss-cpu
