@@ -19,16 +19,13 @@ vectorizer = OpenAIEmbeddings(
     openai_api_key=os.getenv('OPENAI_API_KEY')
 )
 
-# Initialize ChromaDB
-DB = "faculties_vectorstore"
-client = chromadb.PersistentClient(path=DB)
-collection = client.get_or_create_collection('faculties')
 
-def find_similars(description):
+def find_similars(collection, description):
     """
     Find similar faculty members based on the given description.
     
     Args:
+        collection: The ChromaDB collection to search in
         description (str): The description to search for similar faculty members
         
     Returns:
@@ -79,13 +76,14 @@ def messages_for(description, similars):
     user_prompt += make_context(similars)
     return {"role": "user", "content": user_prompt}
 
-def gpt_4o_mini_rag(description, history):
+def gpt_4o_mini_rag(description, history, collection):
     """
     Generate a response using GPT-4o-mini model with RAG.
     
     Args:
         description (str): The user's description
-        history (list): Chat history
+        history (list): Chat history as list of tuples (user_message, assistant_message)
+        collection: The ChromaDB collection to search in
         
     Yields:
         str: Generated response chunks
@@ -95,9 +93,17 @@ def gpt_4o_mini_rag(description, history):
         "content": "You are a academic advisor. You estimate the relevance of faculty members to a given description. Suggest relevant faculty members. Don't forget to include a link to the faculty member's profile. You should give explanation for your choice in markdown format."
     }
     
-    similars = find_similars(description=description)
-    messages = messages_for(description, similars)
-    messages = [system_message] + history + [messages]
+    # Format chat history into proper message format
+    formatted_history = []
+    for user_msg, assistant_msg in history:
+        formatted_history.append({"role": "user", "content": user_msg})
+        formatted_history.append({"role": "assistant", "content": assistant_msg})
+    
+    similars = find_similars(collection=collection, description=description)
+    current_message = messages_for(description, similars)
+    
+    # Combine all messages in the correct order
+    messages = [system_message] + formatted_history + [current_message]
     
     stream = openai.chat.completions.create(
         model="gpt-4o-mini",

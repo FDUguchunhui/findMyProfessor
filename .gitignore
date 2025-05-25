@@ -16,3 +16,4 @@ htmls/
 __pycache__/
 faculties_vectorstore/
 .gradio/
+hf_repo/
