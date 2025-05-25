@@ -118,7 +118,7 @@ class FacultyProfileScraper:
             'url': self.url,
             'title': self.title,
             'content': self.text,
-            'links': links
+            'links': self.links
         }
 
 # Usage example:

@@ -5,8 +5,7 @@ from typing import Dict, List, Optional
 from typing_extensions import override
 import time
 from urllib.parse import urljoin
-from summarize import summarize
-from src.scraper.faculty_scraper import FacultyScraper
+from faculty_scraper import FacultyScraper
 
 class GSBSFacultyScraper(FacultyScraper):
     """A class to scrape faculty information from GSBS websites."""
@@ -186,8 +185,9 @@ class GSBSFacultyScraper(FacultyScraper):
                 # Extract profile URL and get profile summary
                 profile_url = self._extract_profile_url(faculty_div)
                 if profile_url:
-                    profile_summary = self._get_faculty_profile(profile_url)
-                    faculty_info['profile'] = profile_summary
+                    profile = self._get_faculty_profile(profile_url)
+                    faculty_info['profile'] = profile.text
+                    faculty_info['links'] = profile.links
                     faculty_info['profile_url'] = profile_url
                 
                 faculty_list.append(faculty_info)

@@ -4,10 +4,8 @@ import requests
 from bs4 import BeautifulSoup
 from typing import List, Dict, Optional
 from urllib.parse import urljoin
-import src.scraper.profile_scraper as profile_scraper
-from summarize import summarize
+import profile_scraper as profile_scraper
 import json
-
 
 
 class FacultyScraper:
@@ -78,8 +76,9 @@ class FacultyScraper:
 
             profile_url = self._extract_profile_url(faculty_div)
             if profile_url:
-                profile_summary = self._get_faculty_profile(profile_url)
-                faculty_info['profile'] = profile_summary
+                profile = self._get_faculty_profile(profile_url)
+                faculty_info['profile'] = profile.text
+                faculty_info['links'] = profile.links
                 faculty_info['profile_url'] = profile_url
             
             faculty_list.append(faculty_info)
@@ -98,10 +97,12 @@ class FacultyScraper:
             str: Profile summary
         """
         try:
-            return profile_scraper.FacultyProfileScraper(profile_url).text
+            return profile_scraper.FacultyProfileScraper(profile_url)
         except Exception as e:
             print(f"Error summarizing profile {profile_url}: {e}")
             return f"Error: Could not summarize profile"
+        
+    
 
     def _get_faculty_divs(self) -> List:
         '''
