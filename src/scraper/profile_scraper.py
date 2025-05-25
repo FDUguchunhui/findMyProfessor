@@ -13,25 +13,21 @@ class FacultyProfileScraper:
         specifically designed for faculty directory pages
         """
         self.url = url
-        response = requests.get(url, headers=headers)
-        soup = BeautifulSoup(response.content, 'html.parser')
+        self.response = requests.get(url, headers=headers)
+        self.soup = BeautifulSoup(self.response.content, 'html.parser')
         
         # Extract title
-        self.title = soup.title.string if soup.title else "No title found"
+        self.title = self.soup.title.string if self.soup.title else "No title found"
         
         # Remove irrelevant elements
-        self._remove_irrelevant_content(soup)
+        self._remove_irrelevant_content(self.soup)
         
-        # Extract main content only
-        main_content = soup.find('main') or soup.find('div', id='main')
-        if main_content:
-            self.text = main_content.get_text(separator="\n", strip=True)
-        else:
-            # Fallback to body if no main content found
-            self.text = soup.body.get_text(separator="\n", strip=True) if soup.body else "No content found"
+        self.text = self.soup.body.get_text(separator="\n", strip=True) if self.soup.body else "No content found"
         
         # Clean up extra whitespace and empty lines
         self.text = self._clean_text(self.text)
+
+        self.links = self._extract_links(self.soup)
     
     def _remove_irrelevant_content(self, soup):
         """
@@ -85,21 +81,44 @@ class FacultyProfileScraper:
         
         return '\n'.join(cleaned_lines)
     
+    def _extract_links(self, soup):
+        """
+        Extract PubMed and website links from the profile page.
+        
+        Returns:
+            Dict: Dictionary containing PubMed and website links
+        """
+        links = {}
+        
+        # Find all links
+        for link in soup.find_all('a'):
+            href = link.get('href', '')
+            title = link.get('title', '').lower()
+            text = link.get_text().strip().lower()
+            
+            # Check for PubMed link
+            if 'pubmed' in href.lower() or 'pubmed' in title or 'pubmed' in text:
+                links['pubmed'] = href
+            if 'google scholar' in href.lower() or 'google scholar' in title or 'google scholar' in text:
+                links['google scholar'] = href
+            # Check for website link
+            elif 'website' in title or 'website' in text:
+                links['website'] = href
+                
+        return links
+    
     def get_profile_info(self):
         """
         Extract structured information about the faculty member
         """
-        # You could extend this to extract specific fields like:
-        # - Name
-        # - Title
-        # - Department
-        # - Contact info
-        # - Research interests
-        # etc.
+        # Get links
+
+        
         return {
             'url': self.url,
             'title': self.title,
-            'content': self.text
+            'content': self.text,
+            'links': links
         }
 
 # Usage example:
